@@ -1,25 +1,29 @@
+/*
+ * Made improvements. 
+ * Lessons: To get number of rows in a 2D vector, myVector, just do
+ * myVector.size(), to get number of columns, do myVector[0].size()
+ *
+ * Lesson: This approach only uses a single nested for loop to get the minimums
+ * and maximums for each vertical and horizontal skyline. We only need to visit
+ * each element once to get that information. 
+ */
 class Solution {
 public:
     int maxIncreaseKeepingSkyline(vector<vector<int>>& grid) {
-        std::vector<int> vertSkyline;
-        std::vector<int> horizSkyline;
-        int numRows = 0;
         
-        for(const auto & row : grid)
-        {
-            horizSkyline.push_back(*std::max_element(row.begin(), row.end()));
-            numRows++;
-        }
+        int numRows = grid.size();
+        int numCols = grid[0].size();
         
-        for(int i = 0; i < grid[0].size(); i++)
+        std::vector<int> vertSkyline (numCols,0);
+        std::vector<int> horizSkyline (numRows,0);
+        
+        for(int i = 0; i < numRows; i++)
         {
-            int max = 0;
-            for(int j = 0; j < numRows; j++)
+            for(int j = 0; j < numCols; j++)
             {
-                if (grid[j][i] > max)
-                    max = grid[j][i];
+                vertSkyline[j]  = std::max(vertSkyline[j],  grid[i][j]);
+                horizSkyline[i] = std::max(horizSkyline[i], grid[i][j]);
             }
-            vertSkyline.push_back(max);
         }
         
         int sum = 0;
