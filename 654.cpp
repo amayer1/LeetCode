@@ -5,8 +5,7 @@ public:
        TreeNode* node = new TreeNode(0); 
        if(start >= end)
        {
-           node->val = *start;
-           return node;
+           return NULL;
        }
        auto largestIter = std::max_element(start, end);
        node->val = *largestIter;
