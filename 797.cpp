@@ -1,66 +1,48 @@
 /*
  * Find all paths from source to a vertex
+ *
+ * Note: This isn't my solution. After I correctly submitted a solution, I
+ * decided to look at a better one by someone else to see how I can improve.
+ * This person used DFS. I thought about using DFS, but I wasn't sure how to
+ * work it out with the stack. 
+ *
+ * Lesson: See how he handled the stack frame! Inline Comments
  */
 
 class Solution {
 public:
-    
-    void findAllEdgesIncidentOn(vector<vector<int>>& graph, int vertex, vector<int>& incidentOn)
+    /*
+     * I was nervous about the 'path' variable. Each stack frame needed its own
+     * path. I was nervous about passing 'path' by value because copying is
+     * expensive. At the same time, if I passed it by reference it would mess up
+     * other in progress.
+     *
+     * This guy just passed in 'path' by value!
+     */
+    void DFS(vector<vector<int>>& graph, std::vector<vector<int>>& allPaths, std::vector<int> path, int curr)
     {
-        for(int i = 0; i < vertex; i++)
+        //Add current vertex we're visiting to the path
+        path.push_back(curr);
+        //If we've reached destination, add current path to allPaths
+        if(curr == graph.size()-1)
         {
-            for(int j = 0; j < graph[i].size(); j++)
+            allPaths.push_back(path);
+        }
+        else //If we haven't reached destination
+        {
+            //Choose a vertex coming connected to it and pursue it
+            for(auto v : graph[curr])
             {
-                if(graph[i][j] == vertex)
-                {
-                    incidentOn.push_back(i);
-                    break;
-                }
+                DFS(graph, allPaths, path, v);
             }
         }
     }
     
-    void addVectorToPath(std::unordered_map<int, std::vector<vector<int>>>& memo, int vertex, int v)
-    {
-        int initSize = memo[vertex].size();
-        for(auto path : memo[v])
-            memo[vertex].push_back(path);
-        for(int i = initSize; i < memo[vertex].size(); i++)
-            memo[vertex][i].push_back(vertex);
-    }
-    
-    vector<vector<int>> findAllPathsToVector(vector<vector<int>>& graph, int vertex,               std::unordered_map<int, std::vector<vector<int>>>& memo)
-    {
-        
-        if(memo.count(vertex))
-        {
-            return memo[vertex];
-        }
-        
-        vector<int> incidentOn;
-        findAllEdgesIncidentOn(graph, vertex, incidentOn);
-        
-        for(auto v : incidentOn)
-        {
-            if(memo.count(v))
-                addVectorToPath(memo, vertex, v);
-             else
-             {
-                 memo[v] = findAllPathsToVector(graph, v, memo);
-                 addVectorToPath(memo, vertex, v);
-             }
-        }
-        return memo[vertex];
-    }
     vector<vector<int>> allPathsSourceTarget(vector<vector<int>>& graph) 
     {
         std::vector<vector<int>> allPaths;
-        std::vector<int> singlePath;
-        std::unordered_map<int, std::vector<vector<int>>> memo;
-        
-        std::vector<int> pathToZero = {0};
-        memo[0].push_back(pathToZero);
-        
-        return findAllPathsToVector(graph, graph.size()-1, memo);
+        std::vector<int> path;
+        DFS(graph, allPaths, path, 0);
+        return allPaths;
     }
 };
